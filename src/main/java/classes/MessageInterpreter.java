@@ -1,32 +1,25 @@
 package classes;
 
 import enums.CommandEnum;
-import jdk.nashorn.internal.objects.annotations.Function;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.sql.Time;
 import java.util.HashMap;
-import java.util.List;
 
 
 public class MessageInterpreter {
-
-    private Socket socket;
-    private BufferedReader in;
-    private HashMap<String, String> listMap;
+    private final Socket socket;
+    private final BufferedReader in;
+    private final HashMap<String, String> listMap;
     private CommandEnum command;
-    private ClientThread thread;
     public String message = "";
     public String content = "";
 
-    public MessageInterpreter(Socket socket, HashMap<String, String> listMap, ClientThread thread) throws IOException {
+    public MessageInterpreter(Socket socket, HashMap<String, String> listMap) throws IOException {
         this.socket = socket;
         this.listMap = listMap;
-        this.thread = thread;
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
         String line = readLine();
@@ -35,27 +28,21 @@ public class MessageInterpreter {
             this.content = "";
             readLine();
             setCommand(readLine());
-            thread.logger("NEW ACTION: " + this.message);
-
-//            thread.logger("messageLength: " + ((this.messageLength * 2) - 2) );
-            switch (this.command) {
-                case PING:
-                    line = handlePing();
-                    break;
-                case SET:
-                    line = handleSet();
-                    break;
-                case ECHO:
-                    line = handleEcho();
-                    break;
-                case GET:
-                    line = handleGet();
-                    break;
-            }
+            line = findCommandHandler(this.command);
         }
     }
 
-    private CommandEnum setCommand(String message) {
+    private String findCommandHandler(CommandEnum command) throws IOException  {
+        switch (command) {
+            case PING:  return handlePing();
+            case ECHO:  return handleEcho();
+            case SET:   return handleSet();
+            case GET:   return handleGet();
+            default: throw new IllegalArgumentException("Command not implemented");
+        }
+    }
+
+    private void setCommand(String message) {
         if ("ping".equals(message)) {
             this.command = CommandEnum.PING;
         } else if ("echo".equals(message)) {
@@ -65,7 +52,6 @@ public class MessageInterpreter {
         } else if ("get".equals(message)) {
             this.command = CommandEnum.GET;
         }
-        return null;
     }
 
     private String handlePing() throws IOException {
@@ -74,19 +60,16 @@ public class MessageInterpreter {
     }
     private String handleSet() throws IOException {
         String key = setNewPair();
-        thread.logger("key set: " + key);
         new PrintWriter(this.socket.getOutputStream(), true).println("+OK");
 
         String line = readLine();
-        thread.logger("81 line: " + line);
-
-        if(line.charAt(0) != '*' && line != null) {
+        if(line != null && line.charAt(0) != '*') {
             readLine();
             readLine();
             line = readLine();
 
-            Integer timeout = Integer.parseInt(line);
-            thread.logger("timeout: " + timeout);
+            assert line != null;
+            int timeout = Integer.parseInt(line);
             timeout = timeout < 0 ? timeout * -1 : timeout;
             new TimeBomb(key, timeout, listMap).start();
 
@@ -122,7 +105,6 @@ public class MessageInterpreter {
         readLine();
         String value = readLine();
         this.listMap.put(key, value);
-        thread.logger("setNewPair: " + key + " -> " + value);
 
         return key;
     }
@@ -132,7 +114,6 @@ public class MessageInterpreter {
             String line = this.in.readLine();
             if (line == null) return null;
             this.message += line;
-//            if (Config.LOGS) thread.logger("line: " + line);
             return line;
         } catch (Exception e) {return null;}
     }
