@@ -10,13 +10,14 @@ public class ClientThread extends Thread {
     HashMap<String, String> _listMap;
     public ClientThread(Socket socket, int id) {
         this._socket = socket;
-        this._listMap = new HashMap<String, String>();
+        this._listMap = new HashMap<>();
         this.id = id;
+        start();
     }
     @Override
     public void run() {
         try {
-            MessageInterpreter mI = new MessageInterpreter(_socket, _listMap);
+            new MessageInterpreter(_socket, _listMap);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

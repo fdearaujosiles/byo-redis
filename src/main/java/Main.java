@@ -17,8 +17,7 @@ public class Main {
       clientSocket = serverSocket.accept();
       int idCounter = 0;
       while(clientSocket != null) {
-        ClientThread thread = new ClientThread(clientSocket, idCounter);
-        thread.start();
+        new ClientThread(clientSocket, idCounter);
         idCounter++;
         clientSocket = serverSocket.accept();
       }
