@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 public class GetCommand extends Command {
 
     public GetCommand(MessageInterpreter _messageInterpreter) {
-        super(_messageInterpreter, "get");
+        super(_messageInterpreter);
     }
 
     @Override

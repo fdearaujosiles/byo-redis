@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 public class PingCommand extends Command {
 
     public PingCommand(MessageInterpreter _messageInterpreter) {
-        super(_messageInterpreter, "ping");
+        super(_messageInterpreter);
     }
 
     @Override

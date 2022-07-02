@@ -10,6 +10,7 @@ public class TimeBomb extends Thread {
         this.key = key;
         this.timeout = timeout;
         this.listMap = listMap;
+        start();
     }
     @Override
     public void run() {

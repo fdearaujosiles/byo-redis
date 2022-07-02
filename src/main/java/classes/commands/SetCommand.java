@@ -10,7 +10,7 @@ import java.io.PrintWriter;
 public class SetCommand extends Command {
 
     public SetCommand(MessageInterpreter _messageInterpreter) {
-        super(_messageInterpreter, "set");
+        super(_messageInterpreter);
     }
 
     @Override
@@ -27,7 +27,7 @@ public class SetCommand extends Command {
             assert line != null;
             int timeout = Integer.parseInt(line);
             timeout = timeout < 0 ? timeout * -1 : timeout;
-            new TimeBomb(key, timeout, mI.listMap).start();
+            new TimeBomb(key, timeout, mI.listMap);
 
             line = readLine();
         }

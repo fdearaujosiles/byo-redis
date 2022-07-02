@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 public class EchoCommand extends Command {
 
     public EchoCommand(MessageInterpreter _messageInterpreter) {
-        super(_messageInterpreter, "echo");
+        super(_messageInterpreter);
     }
 
     @Override

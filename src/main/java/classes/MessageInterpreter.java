@@ -13,8 +13,17 @@ import java.util.HashMap;
 
 
 public class MessageInterpreter {
+    private final BufferedReader in;
+    private Command findCommandHandler(String command)  {
+        switch (command) {
+            case "ping":  return new PingCommand(this);
+            case "echo":  return new EchoCommand(this);
+            case "set":   return new SetCommand(this);
+            case "get":   return new GetCommand(this);
+            default: throw new IllegalArgumentException("Command not implemented");
+        }
+    }
     public final Socket socket;
-    public final BufferedReader in;
     public final HashMap<String, String> listMap;
     public String readLine() {
         try {
@@ -33,16 +42,4 @@ public class MessageInterpreter {
             line = command.run();
         }
     }
-
-    private Command findCommandHandler(String command)  {
-        switch (command) {
-            case "ping":  return new PingCommand(this);
-            case "echo":  return new EchoCommand(this);
-            case "set":   return new SetCommand(this);
-            case "get":   return new GetCommand(this);
-            default: throw new IllegalArgumentException("Command not implemented");
-        }
-    }
-
-
 }
